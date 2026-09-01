@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RobotOps | Fleet Control</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #0d1117;
+            color: #e6edf3;
+            min-height: 100vh;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 230px;
+            background: #11161d;
+            border-right: 1px solid #252c35;
+            padding: 25px 18px;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 42px;
+        }
+
+        .brand-icon {
+            width: 34px;
+            height: 34px;
+            background: #d6a84f;
+            color: #111;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .brand h2 {
+            font-size: 19px;
+        }
+
+        .brand span {
+            color: #8b949e;
+            font-size: 10px;
+            display: block;
+            margin-top: 3px;
+            letter-spacing: 1px;
+        }
+
+        .nav-title {
+            color: #6e7681;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            margin: 0 10px 10px;
+        }
+
+        .nav {
+            list-style: none;
+        }
+
+        .nav li {
+            padding: 12px;
+            margin-bottom: 5px;
+            border-radius: 6px;
+            color: #8b949e;
+            font-size: 14px;
+        }
+
+        .nav li.active {
+            background: #1d242d;
+            color: white;
+            border-left: 3px solid #d6a84f;
+        }
+
+        .system {
+            margin-top: 80px;
+            padding: 14px;
+            border-top: 1px solid #252c35;
+        }
+
+        .system-title {
+            color: #6e7681;
+            font-size: 10px;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .system-status {
+            font-size: 12px;
+            color: #8b949e;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            background: #6fa878;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        /* MAIN */
+
+        .main {
+            flex: 1;
+            padding: 28px 32px;
+            overflow-x: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 28px;
+        }
+
+        .header h1 {
+            font-size: 25px;
+            font-weight: 500;
+        }
+
+        .header p {
+            color: #6e7681;
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .live {
+            font-size: 11px;
+            color: #8b949e;
+        }
+
+        .time {
+            color: #6e7681;
+            font-size: 12px;
+        }
+
+        /* OVERVIEW */
+
+        .overview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .stat {
+            background: #11161d;
+            border: 1px solid #252c35;
+            border-radius: 8px;
+            padding: 18px;
+        }
+
+        .stat-label {
+            color: #6e7681;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            margin-top: 9px;
+            font-weight: 500;
+        }
+
+        .stat-info {
+            color: #6e7681;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        /* GRID */
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.55fr 1fr;
+            gap: 18px;
+        }
+
+        .panel {
+            background: #11161d;
+            border: 1px solid #252c35;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 17px 19px;
+            border-bottom: 1px solid #252c35;
+        }
+
+        .panel-header h2 {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .panel-header span {
+            color: #6e7681;
+            font-size: 11px;
+        }
+
+        /* MAP */
+
+        .map {
+            height: 355px;
+            position: relative;
+            background:
+                linear-gradient(#171d25 1px, transparent 1px),
+                linear-gradient(90deg, #171d25 1px, transparent 1px);
+            background-size: 45px 45px;
+        }
+
+        .map-label {
+            position: absolute;
+            color: #4d5662;
+            font-size: 9px;
+            letter-spacing: 1px;
+        }
+
+        .zone-a {
+            top: 30px;
+            left: 30px;
+        }
+
+        .zone-b {
+            top: 30px;
+            right: 30px;
+        }
+
+        .zone-c {
+            bottom: 30px;
+            left: 30px;
+        }
+
+        .zone-d {
+            bottom: 30px;
+            right: 30px;
+        }
+
+        .route {
+            position: absolute;
+            height: 1px;
+            background: #38414c;
+        }
+
+        .route-one {
+            width: 280px;
+            top: 170px;
+            left: 115px;
+            transform: rotate(-18deg);
+        }
+
+        .route-two {
+            width: 240px;
+            top: 210px;
+            left: 190px;
+            transform: rotate(25deg);
+        }
+
+        .robot {
+            position: absolute;
+            width: 58px;
+            text-align: center;
+        }
+
+        .robot-icon {
+            width: 38px;
+            height: 38px;
+            margin: auto;
+            background: #202731;
+            border: 1px solid #48515c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .robot-name {
+            font-size: 9px;
+            color: #8b949e;
+            margin-top: 5px;
+        }
+
+        #mapRobot1 {
+            top: 125px;
+            left: 120px;
+        }
+
+        #mapRobot2 {
+            top: 210px;
+            left: 300px;
+        }
+
+        #mapRobot3 {
+            top: 90px;
+            right: 105px;
+        }
+
+        #mapRobot4 {
+            bottom: 70px;
+            right: 220px;
+        }
+
+        /* TASKS */
+
+        .task-list {
+            padding: 5px 18px;
+        }
+
+        .task {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #20262e;
+        }
+
+        .task:last-child {
+            border-bottom: none;
+        }
+
+        .task-id {
+            color: #d6a84f;
+            font-size: 11px;
+            margin-bottom: 5px;
+        }
+
+        .task-name {
+            font-size: 13px;
+        }
+
+        .task-robot {
+            color: #6e7681;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .task-status {
+            font-size: 10px;
+            padding: 5px 8px;
+            border: 1px solid #39414c;
+            border-radius: 4px;
+            color: #8b949e;
+        }
+
+        .task-status.active {
+            color: #d6a84f;
+            border-color: #66552e;
+        }
+
+        /* TELEMETRY */
+
+        .telemetry {
+            margin-top: 18px;
+        }
+
+        .telemetry-content {
+            padding: 0 18px;
+        }
+
+        .telemetry-row {
+            display: grid;
+            grid-template-columns: 70px 1fr 75px 80px;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 0;
+            border-bottom: 1px solid #20262e;
+        }
+
+        .telemetry-row:last-child {
+            border-bottom: none;
+        }
+
+        .robot-id {
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .bar-container {
+            height: 5px;
+            background: #252c35;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .bar {
+            height: 100%;
+            background: #d6a84f;
+            border-radius: 4px;
+        }
+
+        .battery {
+            color: #8b949e;
+            font-size: 11px;
+        }
+
+        .location {
+            color: #6e7681;
+            font-size: 10px;
+            text-align: right;
+        }
+
+        /* ACTIVITY */
+
+        .activity {
+            margin-top: 18px;
+        }
+
+        .activity-list {
+            padding: 6px 18px;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid #20262e;
+        }
+
+        .activity-marker {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #69737e;
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+
+        .activity-text {
+            font-size: 12px;
+            color: #b8c0c8;
+        }
+
+        .activity-time {
+            color: #59626d;
+            font-size: 10px;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 1000px) {
+
+            .sidebar {
+                width: 190px;
+            }
+
+            .overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                padding: 20px;
+            }
+
+            .overview {
+                grid-template-columns: 1fr;
+            }
+
+            .header-right {
+                display: none;
+            }
+
+            .telemetry-row {
+                grid-template-columns: 60px 1fr 55px;
+            }
+
+            .location {
+                display: none;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">R</div>
+
+            <div>
+                <h2>RobotOps</h2>
+                <span>FLEET CONTROL</span>
+            </div>
+        </div>
+
+        <div class="nav-title">OPERATIONS</div>
+
+        <ul class="nav">
+            <li class="active">⌂ &nbsp; Command Center</li>
+            <li>◉ &nbsp; Robot Fleet</li>
+            <li>▣ &nbsp; Missions</li>
+            <li>◌ &nbsp; Telemetry</li>
+            <li>≡ &nbsp; Activity Logs</li>
+        </ul>
+
+        <div class="system">
+
+            <div class="system-title">
+                SYSTEM
+            </div>
+
+            <div class="system-status">
+                <span class="dot"></span>
+                <span id="systemStatus">Checking...</span>
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <main class="main">
+
+        <header class="header">
+
+            <div>
+                <h1>Command Center</h1>
+
+                <p>
+                    Autonomous fleet operations and monitoring
+                </p>
+            </div>
+
+            <div class="header-right">
+
+                <div class="live">
+                    <span class="dot"></span>
+                    LIVE TELEMETRY
+                </div>
+
+                <div class="time" id="updated">
+                    Connecting...
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <section class="overview">
+
+            <div class="stat">
+                <div class="stat-label">Total Fleet</div>
+                <div class="stat-number" id="totalFleet">--</div>
+                <div class="stat-info">Registered robots</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">Active</div>
+                <div class="stat-number" id="activeFleet">--</div>
+                <div class="stat-info">Currently operating</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">Missions</div>
+                <div class="stat-number" id="missionCount">--</div>
+                <div class="stat-info" id="missionInfo">Loading...</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">Fleet Health</div>
+                <div class="stat-number" id="fleetHealth">--%</div>
+                <div class="stat-info">Based on latest telemetry</div>
+            </div>
+
+        </section>
+
+
+        <div class="dashboard-grid">
+
+            <section class="panel">
+
+                <div class="panel-header">
+                    <h2>Fleet Position</h2>
+                    <span>LIVE MAP</span>
+                </div>
+
+                <div class="map">
+
+                    <div class="map-label zone-a">ZONE A</div>
+                    <div class="map-label zone-b">ZONE B</div>
+                    <div class="map-label zone-c">ZONE C</div>
+                    <div class="map-label zone-d">ZONE D</div>
+
+                    <div class="route route-one"></div>
+                    <div class="route route-two"></div>
+
+                    <div class="robot" id="mapRobot1">
+                        <div class="robot-icon">🤖</div>
+                        <div class="robot-name">R-001</div>
+                    </div>
+
+                    <div class="robot" id="mapRobot2">
+                        <div class="robot-icon">🤖</div>
+                        <div class="robot-name">R-002</div>
+                    </div>
+
+                    <div class="robot" id="mapRobot3">
+                        <div class="robot-icon">🤖</div>
+                        <div class="robot-name">R-003</div>
+                    </div>
+
+                    <div class="robot" id="mapRobot4">
+                        <div class="robot-icon">🤖</div>
+                        <div class="robot-name">R-004</div>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <section class="panel">
+
+                <div class="panel-header">
+
+                    <h2>Active Missions</h2>
+
+                    <span id="missionTotal">-- TOTAL</span>
+
+                </div>
+
+                <div class="task-list" id="taskList">
+
+                    <div class="task">
+                        <div>
+                            <div class="task-name">
+                                Loading missions...
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <section class="panel telemetry">
+
+            <div class="panel-header">
+
+                <h2>Robot Telemetry</h2>
+
+                <span>LIVE</span>
+
+            </div>
+
+            <div class="telemetry-content" id="telemetryContent">
+
+                Loading telemetry...
+
+            </div>
+
+        </section>
+
+
+        <section class="panel activity">
+
+            <div class="panel-header">
+
+                <h2>Activity Logs</h2>
+
+                <span>RECENT</span>
+
+            </div>
+
+            <div class="activity-list" id="activityList">
+
+                <div class="activity-item">
+
+                    <div class="activity-marker"></div>
+
+                    <div>
+                        <div class="activity-text">
+                            Connecting to Robot API...
+                        </div>
+
+                        <div class="activity-time">
+                            Just now
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    /*
+       Automatically build the API URL from the
+       Codespaces dashboard hostname.
+
+       Example:
+       dashboard → xxxx-8000.app.github.dev
+       API       → xxxx-5000.app.github.dev
+    */
+
+    let apiHost = window.location.hostname;
+
+    if (apiHost.includes("-8000.")) {
+        apiHost = apiHost.replace("-8000.", "-5000.");
+    }
+
+    const API_URL = window.location.protocol + "//" + apiHost;
+
+
+    async function loadRobots() {
+
+        try {
+
+            const response = await fetch(API_URL + "/robots");
+
+            if (!response.ok) {
+                throw new Error("Robot API returned " + response.status);
+            }
+
+            const robots = await response.json();
+
+            updateDashboard(robots);
+
+            document.getElementById("systemStatus").textContent =
+                "All systems operational";
+
+            document.getElementById("updated").textContent =
+                "Updated just now";
+
+        } catch (error) {
+
+            console.error("Robot API error:", error);
+
+            document.getElementById("systemStatus").textContent =
+                "API connection failed";
+
+            document.getElementById("updated").textContent =
+                "Connection error";
+        }
+    }
+
+
+    async function loadAssignments() {
+
+        try {
+
+            const response = await fetch(API_URL + "/assignments");
+
+            if (!response.ok) {
+                throw new Error("Assignment API returned " + response.status);
+            }
+
+            const assignments = await response.json();
+
+            updateAssignments(assignments);
+
+        } catch (error) {
+
+            console.error("Assignment error:", error);
+
+        }
+    }
+
+
+    function updateDashboard(robots) {
+
+        document.getElementById("totalFleet").textContent =
+            String(robots.length).padStart(2, "0");
+
+
+        const active = robots.filter(robot =>
+            robot.status === "working"
+        ).length;
+
+        document.getElementById("activeFleet").textContent =
+            String(active).padStart(2, "0");
+
+
+        const averageBattery =
+            robots.length
+                ? Math.round(
+                    robots.reduce(
+                        (sum, robot) => sum + Number(robot.battery),
+                        0
+                    ) / robots.length
+                )
+                : 0;
+
+        document.getElementById("fleetHealth").textContent =
+            averageBattery + "%";
+
+
+        const telemetry =
+            document.getElementById("telemetryContent");
+
+        telemetry.innerHTML = "";
+
+
+        robots.forEach(robot => {
+
+            const row = document.createElement("div");
+
+            row.className = "telemetry-row";
+
+            row.innerHTML = `
+                <div class="robot-id">
+                    ${robot.robot_code}
+                </div>
+
+                <div class="bar-container">
+                    <div
+                        class="bar"
+                        style="width:${robot.battery}%"
+                    ></div>
+                </div>
+
+                <div class="battery">
+                    ${robot.battery}%
+                </div>
+
+                <div class="location">
+                    ${robot.location}
+                </div>
+            `;
+
+            telemetry.appendChild(row);
+
+        });
+
+
+        updateMap(robots);
+
+        updateActivity(robots);
+    }
+
+
+    function updateMap(robots) {
+
+        robots.slice(0, 4).forEach((robot, index) => {
+
+            const element =
+                document.getElementById("mapRobot" + (index + 1));
+
+            if (element) {
+
+                const name =
+                    element.querySelector(".robot-name");
+
+                name.textContent =
+                    robot.robot_code + " · " + robot.location;
+
+            }
+
+        });
+
+    }
+
+
+    function updateAssignments(assignments) {
+
+        const list =
+            document.getElementById("taskList");
+
+        list.innerHTML = "";
+
+
+        const assigned =
+            assignments.filter(
+                assignment => assignment.status === "assigned"
+            );
+
+
+        document.getElementById("missionCount").textContent =
+            String(assignments.length).padStart(2, "0");
+
+
+        document.getElementById("missionTotal").textContent =
+            assignments.length + " TOTAL";
+
+
+        const awaiting =
+            assignments.filter(
+                assignment => assignment.status !== "assigned"
+            ).length;
+
+
+        document.getElementById("missionInfo").textContent =
+            awaiting + " awaiting assignment";
+
+
+        if (assignments.length === 0) {
+
+            list.innerHTML = `
+                <div class="task">
+                    <div>
+                        <div class="task-name">
+                            No missions found
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return;
+        }
+
+
+        assignments.slice(0, 6).forEach(assignment => {
+
+            const task = document.createElement("div");
+
+            task.className = "task";
+
+
+            const active =
+                assignment.status === "assigned";
+
+
+            task.innerHTML = `
+
+                <div>
+
+                    <div class="task-id">
+                        M-${String(assignment.id).padStart(4, "0")}
+                    </div>
+
+                    <div class="task-name">
+                        ${assignment.task_name}
+                    </div>
+
+                    <div class="task-robot">
+                        ${active
+                            ? "Assigned · " + assignment.robot_code
+                            : "Awaiting robot"
+                        }
+                    </div>
+
+                </div>
+
+                <div class="task-status ${active ? "active" : ""}">
+                    ${active ? "IN PROGRESS" : assignment.status.toUpperCase()}
+                </div>
+
+            `;
+
+
+            list.appendChild(task);
+
+        });
+
+    }
+
+
+    function updateActivity(robots) {
+
+        const list =
+            document.getElementById("activityList");
+
+        list.innerHTML = "";
+
+
+        robots.slice(0, 5).forEach(robot => {
+
+            const item = document.createElement("div");
+
+            item.className = "activity-item";
+
+
+            item.innerHTML = `
+
+                <div class="activity-marker"></div>
+
+                <div>
+
+                    <div class="activity-text">
+                        ${robot.robot_code}
+                        reporting ${robot.status}
+                        in ${robot.location}
+                    </div>
+
+                    <div class="activity-time">
+                        Battery ${robot.battery}%
+                    </div>
+
+                </div>
+
+            `;
+
+
+            list.appendChild(item);
+
+        });
+
+    }
+
+
+    async function loadEverything() {
+
+        await loadRobots();
+
+        await loadAssignments();
+
+    }
+
+
+    loadEverything();
+
+
+    setInterval(loadEverything, 5000);
+
+</script>
+
+</body>
+</html>

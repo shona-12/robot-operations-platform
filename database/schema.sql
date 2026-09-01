@@ -1,0 +1,31 @@
+CREATE DATABASE IF NOT EXISTS robotops;
+
+USE robotops;
+
+CREATE TABLE robots (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    robot_code VARCHAR(20) NOT NULL UNIQUE,
+    status VARCHAR(30) NOT NULL,
+    battery INT NOT NULL,
+    location VARCHAR(100) NOT NULL,
+    last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE assignments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    robot_id INT NOT NULL,
+    task_name VARCHAR(100) NOT NULL,
+    status VARCHAR(30) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (robot_id) REFERENCES robots(id)
+);
+
+CREATE TABLE telemetry (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    robot_id INT NOT NULL,
+    battery INT NOT NULL,
+    location VARCHAR(100) NOT NULL,
+    status VARCHAR(30) NOT NULL,
+    recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (robot_id) REFERENCES robots(id)
+);
