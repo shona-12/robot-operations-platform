@@ -10,7 +10,7 @@ CORS(app)
 
 def get_db_connection():
     return mysql.connector.connect(
-        host="127.0.0.1",
+        host="robotops-mysql",
         user="root",
         password="robotops123",
         database="robotops"
