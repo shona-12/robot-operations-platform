@@ -757,7 +757,7 @@
         apiHost = apiHost.replace("-8000.", "-5000.");
     }
 
-    const API_URL = window.location.protocol + "//" + apiHost;
+    const API_URL = window.location.protocol + "//" + window.location.hostname + ":30500";
 
 
     async function loadRobots() {
@@ -769,7 +769,6 @@
             if (!response.ok) {
                 throw new Error("Robot API returned " + response.status);
             }
-
             const robots = await response.json();
 
             updateDashboard(robots);
