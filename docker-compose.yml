@@ -1,0 +1,50 @@
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: robotops-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: robotops123
+      MYSQL_DATABASE: robotops
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    networks:
+      - robotops-network
+
+  api:
+    image: robotops-api:latest
+    container_name: robotops-api
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mysql
+    networks:
+      - robotops-network
+
+  simulator:
+    image: robotops-simulator:latest
+    container_name: robotops-simulator
+    depends_on:
+      - api
+    networks:
+      - robotops-network
+
+  frontend:
+    image: robotops-frontend:latest
+    container_name: robotops-frontend
+    ports:
+      - "8000:80"
+    depends_on:
+      - api
+    networks:
+      - robotops-network
+
+networks:
+  robotops-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
